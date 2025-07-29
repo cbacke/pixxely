@@ -130,6 +130,15 @@
     }
 
     function exportGridToFile() {
+      const nameInput = document.getElementById("filenameInput");
+      const filenameStem = nameInput.value.trim();
+      if (!filenameStem) {
+        alert("Please enter a grid name.");
+        return;
+      }
+      const timestamp = Math.floor(Date.now() / 1000);
+      const filename = `${filenameStem}_${timestamp}.json`;
+
       const data = getGridData();
       const blob = new Blob(
         [JSON.stringify(data, null, 2)],
@@ -137,7 +146,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "grid.json";
+      a.download = filename
       a.click();
       URL.revokeObjectURL(url);
     }
