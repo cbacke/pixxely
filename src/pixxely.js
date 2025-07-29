@@ -14,8 +14,8 @@
     const gridNameInput = document.getElementById("gridNameInput");
     const gridSelect = document.getElementById("gridSelect");
 
-    const numCols = 12;
-    const numRows = 24;
+    const numCols = 24;
+    const numRows = 36;
     const rectHeight = 40;
     const rectWidth = rectHeight;
 
