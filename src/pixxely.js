@@ -14,8 +14,10 @@
     const gridNameInput = document.getElementById("gridNameInput");
     const gridSelect = document.getElementById("gridSelect");
 
-    const numCols = 40;
-    const numRows = 20;
+    const numCols = 12;
+    const numRows = 24;
+    const rectHeight = 40;
+    const rectWidth = rectHeight;
 
     const digits = [
       "0", "5", "A", "F"
@@ -52,12 +54,12 @@
         const rect = document.createElement("div");
         rect.className = "rectangle";
         rect.id = `cell-${i}-${j}`;
-        grid.appendChild(rect);
-        const style = getComputedStyle(rect);
-        const rectWidth = parseFloat(style.width);
-        const rectHeight = parseFloat(style.height);
+        rect.style.width = `${rectWidth}px`;
+        rect.style.height = `${rectHeight}px`;
         rect.style.left = `${i * rectWidth}px`;
         rect.style.top = `${j * rectHeight}px`;
+        grid.appendChild(rect);
+        const style = getComputedStyle(rect);
         rect.addEventListener("click", () => {
           if (style.backgroundColor !== normalizeColor(brushColor)) {
             rect.style.backgroundColor = brushColor;
@@ -66,6 +68,7 @@
           }
         });
       }
+      grid.style.height = `${numRows * (rectHeight + 1)}px`;
       for (let j = 0; j < numRows; j++) {
         for (let i = 0; i < numCols; i++) {
           createRectangle(i, j);
