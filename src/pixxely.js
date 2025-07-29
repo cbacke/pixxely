@@ -1,0 +1,221 @@
+    function normalizeColor(rawColor) {
+      const el = document.createElement("div");
+      el.style.color = rawColor;
+      // needs to be in the DOM for getComputedStyle to work in some browsers
+      document.body.appendChild(el);
+      const normalizedColor = getComputedStyle(el).color;
+      document.body.removeChild(el);
+      return normalizedColor;
+    }
+
+    const grid = document.getElementById("grid");
+    const palette = document.getElementById("palette");
+    const fileInput = document.getElementById("fileInput");
+    const gridNameInput = document.getElementById("gridNameInput");
+    const gridSelect = document.getElementById("gridSelect");
+
+    const numCols = 40;
+    const numRows = 20;
+
+    const digits = [
+      "0", "5", "A", "F"
+    ]
+//    [
+//      "0", "1", "2", "3", "4", "5", "6", "7",
+//      "8", "9", "A", "B", "C", "D", "E", "F"]
+
+    const paletteColors = digits.flatMap(
+      x => digits.flatMap(
+        y => digits.map(
+          z => `#${z}${z}${y}${y}${x}${x}`)));
+//          z => `#${x}${x}${y}${y}${z}${z}`)));
+
+//    const paletteColors = [
+//      "white",
+//      "lightgray",
+//      "gray",
+//      "black",
+//      "red",
+//      "orange",
+//      "yellow",
+//      "green",
+//      "blue",
+//      "purple",
+//      "brown",
+//    ];
+
+    // Initial brush color
+    let brushColor = paletteColors[0];
+
+    function generateFullGrid() {
+      function createRectangle(i, j) {
+        const rect = document.createElement("div");
+        rect.className = "rectangle";
+        rect.id = `cell-${i}-${j}`;
+        grid.appendChild(rect);
+        const style = getComputedStyle(rect);
+        const rectWidth = parseFloat(style.width);
+        const rectHeight = parseFloat(style.height);
+        rect.style.left = `${i * rectWidth}px`;
+        rect.style.top = `${j * rectHeight}px`;
+        rect.addEventListener("click", () => {
+          if (style.backgroundColor !== normalizeColor(brushColor)) {
+            rect.style.backgroundColor = brushColor;
+          } else {
+            rect.style.backgroundColor = "white";
+          }
+        });
+      }
+      for (let j = 0; j < numRows; j++) {
+        for (let i = 0; i < numCols; i++) {
+          createRectangle(i, j);
+        }
+      }
+    }
+
+    function updateCursor(color) {
+      const size = 15;
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, size, size);
+      grid.style.cursor = `url(${canvas.toDataURL("image/png")}) 0 0, auto`;
+    }
+
+    function createPaletteSwatches() {
+      paletteColors.forEach(color => {
+        const swatch = document.createElement("div");
+        swatch.className = "color-swatch";
+        swatch.style.backgroundColor = color;
+        swatch.addEventListener("click", () => {
+          brushColor = color;
+          document.querySelectorAll(".color-swatch").forEach(
+            s => s.classList.remove("active-brush"));
+          swatch.classList.add("active-brush");
+          updateCursor(color);
+        });
+        palette.appendChild(swatch);
+      });
+    }
+
+    function markInitialBrushColor() {
+      const initialBrush = Array.from(palette.children).find(
+        s => s.style.backgroundColor === normalizeColor(brushColor));
+      if (initialBrush) {
+        initialBrush.classList.add("active-brush");
+        updateCursor(brushColor);
+      }
+    }
+
+    function getGridData() {
+      const cells = [];
+      for (let j = 0; j < numRows; j++) {
+        const row = [];
+        for (let i = 0; i < numCols; i++) {
+          const cell = document.querySelector(`#cell-${i}-${j}`);
+          row.push(cell.style.backgroundColor || "white");
+        }
+        cells.push(row);
+      }
+      return {
+        cols: numCols,
+        rows: numRows,
+        cells: cells
+      };
+    }
+
+    function exportGridToFile() {
+      const data = getGridData();
+      const blob = new Blob(
+        [JSON.stringify(data, null, 2)],
+        { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "grid.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function applyGridData(data) {
+      for (let j = 0; j < data.rows; j++) {
+        for (let i = 0; i < data.cols; i++) {
+          const cell = document.querySelector(`#cell-${i}-${j}`);
+          if (cell) {
+            cell.style.backgroundColor = data.cells[j][i];
+          }
+        }
+      }
+    }
+
+    // Load from file
+    fileInput.addEventListener("change", function () {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const data = JSON.parse(e.target.result);
+        applyGridData(data);
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById("fileButton").addEventListener("click", () => {
+      document.getElementById("fileInput").click();
+    });
+
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+//    // Save to localStorage with a name
+//    function saveNamedGrid() {
+//      const name = gridNameInput.value.trim();
+//      if (!name) {
+//        alert("Enter a grid name.");
+//        return;
+//      }
+//      const key = `grid:${name}`;
+//      const data = getGridData();
+//      localStorage.setItem(key, JSON.stringify(data));
+//      refreshGridSelect();
+//      alert(`Saved grid as "${name}"`);
+//    }
+//
+//    // Load named grid
+//    function loadNamedGrid(name) {
+//      if (!name) return;
+//      const key = `grid:${name}`;
+//      const json = localStorage.getItem(key);
+//      if (!json) {
+//        alert("Grid not found.");
+//        return;
+//      }
+//      const data = JSON.parse(json);
+//      applyGridData(data);
+//    }
+//
+//    // Refresh saved grid list
+//    function refreshGridSelect() {
+//      const keys = Object.keys(localStorage).filter(k => k.startsWith("grid:"));
+//      gridSelect.innerHTML = `<option value="">⬇ Load Saved Grid</option>`;
+//      keys.forEach(key => {
+//        const name = key.replace("grid:", "");
+//        const option = document.createElement("option");
+//        option.value = name;
+//        option.textContent = name;
+//        gridSelect.appendChild(option);
+//      });
+//    }
+//
+//    refreshGridSelect();
+
+// xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    function main() {
+      generateFullGrid();
+      createPaletteSwatches();
+      markInitialBrushColor();
+    }
+
+    main();

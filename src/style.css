@@ -1,0 +1,80 @@
+    body {
+      margin: 0;
+      font-family: sans-serif;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    #grid {
+      flex: 3;
+      position: relative;
+      background-color: #f0f0f0;
+    }
+
+    .rectangle {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      background-color: white;
+      border: 1px solid #444;
+      /*
+      border: none;
+      border: 5px solid #444;
+      cursor: pointer;
+      */
+    }
+
+    #palette {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      align-items: center;
+
+      flex-wrap: wrap;
+      background: #ddd;
+
+      /*
+      flex: 1;
+      justify-content: center;
+      background-color: #ddd;
+      border-top: 2px solid #bbb;
+      */
+    }
+
+    .color-swatch {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #333;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.1);
+    }
+
+    .active-brush {
+      outline: 4px solid black;
+    }
+
+    #controls {
+      padding: 10px;
+      background: #eee;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    button, input, select {
+      font-size: 14px;
+      padding: 5px 8px;
+    }
+
+    input[type="file"] {
+      padding: 0;
+    }

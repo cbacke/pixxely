@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pixxely</title>
+  <style>
+<!-- INLINE_CSS -->
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="grid"></div>
+    <div id="palette"></div>
+    <div id="controls">
+      <button onclick="exportGridToFile()">💾</button>
+
+      <button id="fileButton" title="Load from File">📂</button>
+      <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+<!--
+      <input type="text" id="gridNameInput" placeholder="Enter grid name">
+      <button onclick="saveNamedGrid()">💾 Save Named Grid</button>
+      <select id="gridSelect" onchange="loadNamedGrid(this.value)">
+        <option value="">⬇ Load Saved Grid</option>
+      </select>
+-->
+    </div>
+  </div>
+  <script>
+<!-- INLINE_JS -->
+  </script>
+</body>
+</html>
