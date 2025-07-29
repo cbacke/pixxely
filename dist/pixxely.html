@@ -72,13 +72,15 @@
       align-items: center;
     }
 
-    button, input, select {
+    button, input[type="text"], select {
       font-size: 14px;
-      padding: 5px 8px;
+      min-height: 40px;
+      min-width: 40px;
+      box-sizing: border-box;
     }
 
     input[type="file"] {
-      padding: 0;
+      display: none;
     }
 
   </style>
